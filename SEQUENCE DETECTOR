@@ -1,0 +1,78 @@
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+struct Transition {
+    char present_state;
+    char next_state;
+    int input;
+    int output;
+};
+
+int main() {
+    vector<Transition> transitions;
+    vector<int> sequence;
+    bool is_overlapping = false;
+    char initial_state = 'a';
+    char final_state;
+
+    // Input transitions from user
+    cout << "Enter transitions (present_state next_state input output). Type 'end' to finish input:\n";
+    while (true) {
+        Transition transition;
+        string present, next;
+        cin >> present;
+        if (present == "end") break;  // End input
+        cin >> next >> transition.input >> transition.output;
+        transition.present_state = present[0];
+        transition.next_state = next[0];
+        transitions.push_back(transition);
+    }
+
+    // Determine the final state based on the last transition
+    if (!transitions.empty()) {
+        final_state = transitions.back().present_state;
+    }
+
+    // Process transitions
+    for (size_t i = 0; i < transitions.size(); i++) {
+        char present = transitions[i].present_state;
+        char next = transitions[i].next_state;
+        int input = transitions[i].input;
+        int output = transitions[i].output;
+
+        // Add input to sequence if moving forward (present != next)
+        if (present != next) {
+            // Skip backward moves to `a`, except from the final state to initial with output 1
+            if (next == initial_state && present != final_state) {
+                continue;
+            }
+            if (present == final_state && next == initial_state && output != 1) {
+                continue;  // Skip final-to-initial transition if output is not 1
+            }
+            sequence.push_back(input);  // Add to sequence
+        }
+
+        // Determine if overlapping by checking for transitions not ending at initial
+        if (present == final_state && next != initial_state) {
+            is_overlapping = true;
+        }
+    }
+
+    // Output sequence
+    cout << "Sequence: ";
+    for (int s : sequence) {
+        cout << s;
+    }
+    cout << endl;
+
+    // Check if overlapping or non-overlapping sequence
+    if (is_overlapping) {
+        cout << "Overlapping Sequence Detector" << endl;
+    } else {
+        cout << "Non-Overlapping Sequence Detector" << endl;
+    }
+
+    return 0;
+}
