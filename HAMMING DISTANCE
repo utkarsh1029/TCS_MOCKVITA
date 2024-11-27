@@ -1,0 +1,70 @@
+#include <iostream>
+#include <string>
+#include <set>
+#include <algorithm>
+
+using namespace std;
+
+// Function to calculate the total cost based on given substring rules
+int calculate_cost(const string &binary_str) {
+    int total_cost = 0;
+    int n = binary_str.size();
+
+    // Iterate through the string and check for substrings of length 2
+    for (int i = 0; i < n - 1; ++i) {
+        string substr = binary_str.substr(i, 2);  // Get substring of length 2
+
+        if (substr == "01") {
+            total_cost += 3;  // Cost for "01"
+        }
+        else if (substr == "10") {
+            total_cost += 2;  // Cost for "10"
+        }
+    }
+
+    return total_cost;
+}
+
+// Function to generate all unique anagrams and calculate the minimum cost
+int find_min_cost(string binary_str) {
+    set<string> anagrams;  // Set to store unique anagrams
+
+    // Sort the string to ensure that next_permutation works properly
+    sort(binary_str.begin(), binary_str.end());
+
+    // Generate all permutations using next_permutation
+    do {
+        anagrams.insert(binary_str);  // Add the current permutation to the set
+    } while (next_permutation(binary_str.begin(), binary_str.end()));
+
+    // Initialize the minimum cost to a large value
+    int min_cost = INT_MAX;
+
+    // Calculate the cost for each anagram and update min_cost if necessary
+    for (const auto& anagram : anagrams) {
+        int current_cost = calculate_cost(anagram);
+        min_cost = min(min_cost, current_cost);  // Update min_cost if current_cost is smaller
+    }
+
+    return min_cost;
+}
+
+int main() {
+    string binary_str;
+    cout << "Enter a binary string: ";
+    cin >> binary_str;
+
+    // Validate binary input
+    for (char c : binary_str) {
+        if (c != '0' && c != '1') {
+            cout << "Invalid input! Please enter a binary string (only 0's and 1's).\n";
+            return 1;
+        }
+    }
+
+    // Find the minimum cost of all anagrams of the binary string
+    int min_cost = find_min_cost(binary_str);
+    cout << "Minimum cost of the binary string after generating all anagrams: " << min_cost << endl;
+
+    return 0;
+}
